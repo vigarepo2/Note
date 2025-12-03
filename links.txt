@@ -3,3 +3,4 @@ https://github.com/glitport/AuthoIPTV/wiki/Downloads
 https://jcevents.hotstar.com/bpk-tv/f0e3e64ae415771d8e460317ce97aa5e/Fallback/index2.m3u8?|Cookie=hdntl=exp=1764809407~acl=%2f*~id=86670470e183168f44a845bbb5cacf0d~data=hdntl~hmac=532c3af740e166fb3b3bcba6a438b22a1370e52df9ccdfa1a75861290cb6d8b7&Origin=https://www.hotstar.com&Referer=https://www.hotstar.com/&User-agent=Hotstar;in.startv.hotstar/SportsLover(Android/15)
 
 systeminfo | findstr /B /C:"OS Name" /C:"OS Version"
+wmic os get osarchitecture
