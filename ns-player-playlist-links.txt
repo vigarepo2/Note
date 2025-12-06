@@ -1,3 +1,0 @@
-https://github.com/vigarepo2/iptv-app/raw/refs/heads/main/playlists/news-hindi-backup.m3u
-https://github.com/vigarepo2/iptv-app/raw/refs/heads/main/Cinema/Web%20Series/WhenLifeGivesYouTangerines/dl.m3u
-https://github.com/Neo045/Neo/raw/refs/heads/main/TVSeriesPlaylist.m3u
