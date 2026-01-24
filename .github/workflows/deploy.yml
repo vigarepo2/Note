@@ -1,34 +1,107 @@
-name: Build Playlist
+name: Deploy IPTV Portal
 
 on:
-  push:
-    branches: [ main ]
   workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * *' # Auto-update every 24 hours
 
 env:
+  # PUT YOUR M3U URL HERE
   M3U_URL: "https://file-cdn.indexer.eu.org/dl/AgADYR0AAldaqFM/BQACAgQAAyEFAATUTy77AAOfaXScAx3vMxrswLoie3Z5ZSCljSgAAmEdAAJXWqhTZIUG-B1tuw0eBA/39480005/opplex.m3u"
 
 permissions:
   contents: write
 
 jobs:
-  build-and-deploy:
+  build-portal:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Download M3U
-        run: |
-          mkdir -p playlist
-          wget -O playlist/source.m3u "${{ env.M3U_URL }}"
-
-      - uses: actions/setup-python@v4
+      - name: Setup Python
+        uses: actions/setup-python@v4
         with:
           python-version: '3.9'
 
-      - run: python scripts/builder.py
+      - name: Create Builder Script
+        run: |
+          cat << 'EOF' > builder.py
+          import os, re, json, shutil, requests
 
-      - uses: peaceiris/actions-gh-pages@v3
+          # CONFIG
+          M3U_URL = os.environ.get("M3U_URL")
+          OUTPUT_DIR = "web/data"
+
+          def clean(text):
+              return re.sub(r'[^\x20-\x7E]', '', text).strip() if text else ""
+
+          def extract_id(url):
+              clean = url.strip()
+              if "/" in clean:
+                  seg = clean.rsplit("/", 1)[-1]
+                  if '.' in seg and len(seg.split('.')[-1]) <= 4: seg = seg.rsplit('.', 1)[0]
+                  return seg
+              return clean
+
+          print("🚀 Downloading M3U...")
+          try:
+              r = requests.get(M3U_URL, headers={"User-Agent": "Mozilla/5.0"}, timeout=60)
+              r.raise_for_status()
+              content = r.text
+          except Exception as e:
+              print(f"❌ Error: {e}")
+              exit(1)
+
+          if os.path.exists("web"): shutil.rmtree("web")
+          os.makedirs(OUTPUT_DIR)
+
+          categories = {}
+          index = []
+
+          print("⚙️ Parsing...")
+          lines = content.splitlines()
+          curr_grp, curr_name, curr_logo = "Uncategorized", None, ""
+
+          for line in lines:
+              line = line.strip()
+              if not line: continue
+              if line.startswith("#EXTINF"):
+                  g = re.search(r'group-title="([^"]+)"', line)
+                  curr_grp = clean(g.group(1)) if g else "Uncategorized"
+                  l = re.search(r'tvg-logo="([^"]+)"', line)
+                  curr_logo = l.group(1) if l else ""
+                  curr_name = clean(line.rsplit(',', 1)[-1])
+              elif not line.startswith("#"):
+                  if curr_name:
+                      if curr_grp not in categories: categories[curr_grp] = []
+                      categories[curr_grp].append({"n": curr_name, "i": extract_id(line), "l": curr_logo})
+                      curr_name = None
+
+          print(f"📦 Exporting {len(categories)} categories...")
+          for cat, chans in categories.items():
+              safe_name = re.sub(r'[<>:"/\\|?*]', '_', cat).strip() + ".json"
+              index.append({"name": cat, "file": safe_name, "count": len(chans)})
+              with open(os.path.join(OUTPUT_DIR, safe_name), 'w') as f:
+                  json.dump(chans, f, separators=(',', ':'))
+
+          with open(os.path.join(OUTPUT_DIR, "index.json"), 'w') as f:
+              json.dump(index, f)
+          
+          # Copy index.html to web root (will be created in next step)
+          # We don't copy here, we assume index.html exists in root of repo
+          EOF
+
+      - name: Install Requests
+        run: pip install requests
+
+      - name: Run Builder
+        run: python builder.py
+
+      - name: Move HTML
+        run: cp index.html web/index.html
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./web
