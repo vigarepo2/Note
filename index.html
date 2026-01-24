@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IPTV Master Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg: #0f172a; --panel: #1e293b; --primary: #3b82f6; --accent: #8b5cf6; --text: #f1f5f9; --border: #334155; --success: #22c55e; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background: var(--bg); color: var(--text); height: 100vh; display: flex; overflow: hidden; }
+        
+        /* LAYOUT */
+        .sidebar { width: 300px; background: var(--panel); border-right: 1px solid var(--border); display: flex; flex-direction: column; }
+        .main { flex: 1; display: flex; flex-direction: column; position: relative; }
+        .toolbar { padding: 15px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: var(--bg); }
+        
+        /* TABS */
+        .tabs { display: flex; background: var(--bg); padding: 5px; }
+        .tab { flex: 1; padding: 10px; text-align: center; cursor: pointer; color: #94a3b8; border-bottom: 2px solid transparent; font-size: 0.9rem; }
+        .tab.active { color: var(--primary); border-color: var(--primary); font-weight: 600; }
+
+        /* LISTS */
+        .list-container { flex: 1; overflow-y: auto; padding: 0; }
+        .item { padding: 10px 15px; border-bottom: 1px solid var(--border); cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; }
+        .item:hover { background: rgba(255,255,255,0.05); }
+        .item.active { background: rgba(59, 130, 246, 0.15); border-left: 3px solid var(--primary); }
+        .badge { background: var(--bg); padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; color: var(--text); }
+
+        /* GRID */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; padding: 20px; overflow-y: auto; }
+        .card { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 10px; display: flex; flex-direction: column; align-items: center; position: relative; }
+        .card img { width: 50px; height: 50px; margin-bottom: 10px; border-radius: 4px; object-fit: contain; }
+        .card-name { font-size: 0.85rem; text-align: center; margin-bottom: 10px; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        
+        /* CONTROLS */
+        .btn { padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer; font-weight: 500; transition: 0.2s; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-success { background: var(--success); color: white; }
+        .btn-icon { background: transparent; color: #94a3b8; font-size: 1.2rem; }
+        .btn-icon:hover { color: white; }
+        
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; font-size: 0.8rem; margin-bottom: 5px; color: #94a3b8; }
+        .input-field { width: 100%; padding: 10px; background: var(--bg); border: 1px solid var(--border); color: white; border-radius: 4px; }
+
+        /* MODAL */
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 1000; }
+        .modal-content { background: var(--panel); padding: 20px; border-radius: 8px; width: 400px; border: 1px solid var(--border); }
+        .modal-header { font-size: 1.1rem; font-weight: 600; margin-bottom: 15px; }
+        .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+
+        /* EDITOR STYLES */
+        .editor-panel { position: absolute; right: 0; top: 0; width: 350px; height: 100%; background: var(--panel); border-left: 1px solid var(--border); transform: translateX(100%); transition: 0.3s; z-index: 100; display: flex; flex-direction: column; }
+        .editor-panel.open { transform: translateX(0); }
+        .editor-header { padding: 15px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+
+        /* MY PLAYLIST TAB */
+        .custom-item { padding: 10px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .remove-btn { color: #ef4444; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div style="padding: 20px; font-weight: 700; font-size: 1.2rem; color: var(--primary);">IPTV Master</div>
+        
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('browse')">Browse</div>
+            <div class="tab" onclick="switchTab('my-list')">My Playlist</div>
+            <div class="tab" onclick="switchTab('settings')">Settings</div>
+        </div>
+
+        <div id="tab-browse" class="list-container">
+            <input type="text" id="catSearch" class="input-field" placeholder="Search categories..." style="margin: 10px; width: calc(100% - 20px);">
+            <div id="categoryList"></div>
+        </div>
+
+        <div id="tab-my-list" class="list-container" style="display:none;">
+            <div style="padding: 10px; text-align: center; color: #94a3b8; font-size: 0.8rem;">
+                Click channels in Browse to add them here.
+                <br><br>
+                <button class="btn btn-success" onclick="exportM3U()">Download Custom M3U</button>
+            </div>
+            <div id="customList"></div>
+        </div>
+
+        <div id="tab-settings" class="list-container" style="display:none; padding: 20px;">
+            <div class="input-group">
+                <label>DNS / Domain (e.g., opplex.org:8080)</label>
+                <input type="text" id="cfgDomain" class="input-field" placeholder="domain.com:port">
+            </div>
+            <div class="input-group">
+                <label>Username</label>
+                <input type="text" id="cfgUser" class="input-field">
+            </div>
+            <div class="input-group">
+                <label>Password</label>
+                <input type="text" id="cfgPass" class="input-field">
+            </div>
+            <button class="btn btn-primary" onclick="saveSettings()" style="width: 100%;">Save Credentials</button>
+            <p style="margin-top: 20px; font-size: 0.8rem; color: #94a3b8;">Credentials are saved in your browser.</p>
+        </div>
+    </aside>
+
+    <main class="main">
+        <header class="toolbar">
+            <h3 id="pageTitle">Welcome</h3>
+            <div id="actionArea"></div>
+        </header>
+
+        <div id="contentArea" class="grid">
+            <div style="grid-column: 1/-1; text-align: center; margin-top: 50px; color: #94a3b8;">
+                Select a category or configure settings.
+            </div>
+        </div>
+
+        <div id="editorPanel" class="editor-panel">
+            <div class="editor-header">
+                <h4>Edit Channel</h4>
+                <button class="btn-icon" onclick="closeEditor()">×</button>
+            </div>
+            <div style="padding: 20px;">
+                <div class="input-group">
+                    <label>Channel Name</label>
+                    <input type="text" id="editName" class="input-field">
+                </div>
+                <div class="input-group">
+                    <label>Target Folder (Custom Group)</label>
+                    <input type="text" id="editFolder" class="input-field" placeholder="e.g. My Fav Sports">
+                </div>
+                <input type="hidden" id="editId">
+                <input type="hidden" id="editLogo">
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button class="btn btn-primary" style="flex: 1;" onclick="addToCustom()">Add/Update</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // --- STATE ---
+        let dbIndex = [];
+        let myPlaylist = JSON.parse(localStorage.getItem('myPlaylist')) || [];
+        let config = JSON.parse(localStorage.getItem('iptvConfig')) || { domain: "", user: "", pass: "" };
+
+        // --- INIT ---
+        window.addEventListener('DOMContentLoaded', () => {
+            loadConfigUI();
+            fetch('data/index.json')
+                .then(r => r.json())
+                .then(data => {
+                    dbIndex = data;
+                    renderCategories(data);
+                })
+                .catch(() => alert("Data not found. Did the GitHub Action run?"));
+            
+            renderCustomList();
+        });
+
+        // --- TABS ---
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.list-container').forEach(c => c.style.display = 'none');
+            
+            // Activate
+            if(tabId === 'browse') {
+                document.querySelector('.tab:nth-child(1)').classList.add('active');
+                document.getElementById('tab-browse').style.display = 'block';
+            } else if(tabId === 'my-list') {
+                document.querySelector('.tab:nth-child(2)').classList.add('active');
+                document.getElementById('tab-my-list').style.display = 'block';
+                renderCustomList();
+            } else {
+                document.querySelector('.tab:nth-child(3)').classList.add('active');
+                document.getElementById('tab-settings').style.display = 'block';
+            }
+        }
+
+        // --- BROWSE LOGIC ---
+        function renderCategories(list) {
+            const el = document.getElementById('categoryList');
+            el.innerHTML = "";
+            list.forEach(cat => {
+                const div = document.createElement('div');
+                div.className = 'item';
+                div.innerHTML = `<span>${cat.name}</span> <span class="badge">${cat.count}</span>`;
+                div.onclick = () => loadCategory(cat);
+                el.appendChild(div);
+            });
+
+            // Search
+            document.getElementById('catSearch').oninput = (e) => {
+                const term = e.target.value.toLowerCase();
+                const filtered = dbIndex.filter(c => c.name.toLowerCase().includes(term));
+                renderCategories(filtered);
+            };
+        }
+
+        function loadCategory(cat) {
+            document.getElementById('pageTitle').innerText = cat.name;
+            const grid = document.getElementById('contentArea');
+            grid.innerHTML = '<div style="color:white;">Loading...</div>';
+
+            fetch(`data/${cat.file}`)
+                .then(r => r.json())
+                .then(chans => {
+                    grid.innerHTML = "";
+                    chans.forEach(ch => {
+                        const card = document.createElement('div');
+                        card.className = 'card';
+                        const logo = ch.l || "https://via.placeholder.com/50?text=TV";
+                        card.innerHTML = `
+                            <img src="${logo}" onerror="this.src='https://via.placeholder.com/50'">
+                            <div class="card-name">${ch.n}</div>
+                            <button class="btn btn-primary" style="font-size: 0.7rem;" onclick="openEditor('${escape(ch.n)}', '${ch.i}', '${escape(logo)}')">Edit / Add</button>
+                        `;
+                        grid.appendChild(card);
+                    });
+                });
+        }
+
+        // --- EDITOR LOGIC ---
+        function openEditor(name, id, logo) {
+            document.getElementById('editorPanel').classList.add('open');
+            document.getElementById('editName').value = unescape(name);
+            document.getElementById('editFolder').value = "My Favorites";
+            document.getElementById('editId').value = id;
+            document.getElementById('editLogo').value = unescape(logo);
+        }
+
+        function closeEditor() {
+            document.getElementById('editorPanel').classList.remove('open');
+        }
+
+        function addToCustom() {
+            const item = {
+                n: document.getElementById('editName').value,
+                g: document.getElementById('editFolder').value,
+                i: document.getElementById('editId').value,
+                l: document.getElementById('editLogo').value
+            };
+
+            // Check if exists, update or add
+            const idx = myPlaylist.findIndex(x => x.i === item.i);
+            if(idx > -1) myPlaylist[idx] = item;
+            else myPlaylist.push(item);
+
+            saveMyPlaylist();
+            alert("Added to My Playlist!");
+            closeEditor();
+            renderCustomList();
+        }
+
+        // --- MY PLAYLIST LOGIC ---
+        function saveMyPlaylist() {
+            localStorage.setItem('myPlaylist', JSON.stringify(myPlaylist));
+        }
+
+        function renderCustomList() {
+            const el = document.getElementById('customList');
+            el.innerHTML = "";
+            // Group by custom folder
+            const groups = {};
+            myPlaylist.forEach(p => {
+                if(!groups[p.g]) groups[p.g] = [];
+                groups[p.g].push(p);
+            });
+
+            for(const [grp, items] of Object.entries(groups)) {
+                el.innerHTML += `<div style="padding:10px; background:#1e293b; font-weight:bold; color:var(--primary); margin-top:5px;">${grp}</div>`;
+                items.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'custom-item';
+                    div.innerHTML = `
+                        <span style="font-size:0.8rem;">${item.n}</span>
+                        <span class="remove-btn" onclick="removeFromPlaylist('${item.i}')">×</span>
+                    `;
+                    el.appendChild(div);
+                });
+            }
+        }
+
+        function removeFromPlaylist(id) {
+            myPlaylist = myPlaylist.filter(x => x.i !== id);
+            saveMyPlaylist();
+            renderCustomList();
+        }
+
+        // --- EXPORT LOGIC ---
+        function exportM3U() {
+            if(!config.domain || !config.user) {
+                alert("Please go to Settings tab and enter your credentials first!");
+                switchTab('settings');
+                return;
+            }
+
+            let m3u = "#EXTM3U\n";
+            myPlaylist.forEach(ch => {
+                const url = `http://${config.domain}/${config.user}/${config.pass}/${ch.i}`;
+                const logo = ch.l ? ` tvg-logo="${ch.l}"` : "";
+                m3u += `#EXTINF:-1 group-title="${ch.g}"${logo},${ch.n}\n${url}\n`;
+            });
+
+            const blob = new Blob([m3u], {type: "text/plain"});
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "My_Custom_Playlist.m3u";
+            link.click();
+        }
+
+        // --- SETTINGS LOGIC ---
+        function loadConfigUI() {
+            document.getElementById('cfgDomain').value = config.domain;
+            document.getElementById('cfgUser').value = config.user;
+            document.getElementById('cfgPass').value = config.pass;
+        }
+
+        function saveSettings() {
+            config.domain = document.getElementById('cfgDomain').value.trim();
+            config.user = document.getElementById('cfgUser').value.trim();
+            config.pass = document.getElementById('cfgPass').value.trim();
+            localStorage.setItem('iptvConfig', JSON.stringify(config));
+            alert("Settings Saved!");
+        }
+
+        function unescape(s) { return decodeURIComponent(s); }
+        function escape(s) { return encodeURIComponent(s); }
+    </script>
+</body>
+</html>
