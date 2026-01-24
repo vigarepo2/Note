@@ -1,0 +1,35 @@
+name: Build Playlist
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+env:
+  M3U_URL: "https://file-cdn.indexer.eu.org/dl/AgADYR0AAldaqFM/BQACAgQAAyEFAATUTy77AAOfaXScAx3vMxrswLoie3Z5ZSCljSgAAmEdAAJXWqhTZIUG-B1tuw0eBA/39480005/opplex.m3u"
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download M3U
+        run: |
+          mkdir -p playlist
+          wget -O playlist/source.m3u "${{ env.M3U_URL }}"
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - run: python scripts/builder.py
+
+      - uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./web
+          force_orphan: true
