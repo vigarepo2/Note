@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <filter id="shadowDoc" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="16" stdDeviation="20" flood-color="#020617" flood-opacity="0.15"/>
+    </filter>
+    <filter id="shadowCitrus" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="-4" dy="12" stdDeviation="16" flood-color="#020617" flood-opacity="0.25"/>
+      <feDropShadow dx="0" dy="0" stdDeviation="8" flood-color="#FACC15" flood-opacity="0.2"/>
+    </filter>
+
+    <linearGradient id="docFront" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#334155"/>
+      <stop offset="100%" stop-color="#0F172A"/>
+    </linearGradient>
+    <linearGradient id="docFold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#475569"/>
+      <stop offset="100%" stop-color="#1E293B"/>
+    </linearGradient>
+    
+    <linearGradient id="lemonRind" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FDE047"/>
+      <stop offset="100%" stop-color="#A16207"/>
+    </linearGradient>
+    <linearGradient id="lemonPulp" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FEF08A"/>
+      <stop offset="100%" stop-color="#EAB308"/>
+    </linearGradient>
+
+    <path id="citrusSegment" d="M 380 380 L 478 350 A 104 104 0 0 1 478 410 Z" fill="url(#lemonPulp)"/>
+  </defs>
+
+  <g filter="url(#shadowDoc)">
+    <path d="M 112 64 H 304 L 416 176 V 432 C 416 440.8 408.8 448 400 448 H 128 C 119.2 448 112 440.8 112 432 V 64 Z" fill="url(#docFront)"/>
+    <path d="M 304 64 V 160 C 304 168.8 311.2 176 320 176 H 416 Z" fill="url(#docFold)"/>
+  </g>
+
+  <rect x="152" y="112" width="76" height="32" rx="6" fill="#1E293B"/>
+  <text x="190" y="135" font-family="system-ui, sans-serif" font-size="20" font-weight="800" fill="#94A3B8" text-anchor="middle" letter-spacing="1">MP4</text>
+  
+  <rect x="152" y="176" width="160" height="12" rx="6" fill="#475569"/>
+  <rect x="152" y="220" width="160" height="100" rx="8" fill="#1E293B"/>
+  <circle cx="232" cy="270" r="24" fill="#475569"/>
+  <path d="M 224 258 L 246 270 L 224 282 Z" fill="#94A3B8"/>
+  <rect x="168" y="336" width="128" height="6" rx="3" fill="#475569"/>
+
+  <g filter="url(#shadowCitrus)">
+    <circle cx="380" cy="380" r="120" fill="url(#lemonRind)"/>
+    <circle cx="380" cy="380" r="112" fill="#F8FAFC"/>
+    
+    <use href="#citrusSegment" transform="rotate(0 380 380)"/>
+    <use href="#citrusSegment" transform="rotate(72 380 380)"/>
+    <use href="#citrusSegment" transform="rotate(144 380 380)"/>
+    <use href="#citrusSegment" transform="rotate(216 380 380)"/>
+    <use href="#citrusSegment" transform="rotate(288 380 380)"/>
+    
+    <circle cx="380" cy="380" r="14" fill="#F8FAFC"/>
+  </g>
+</svg>
