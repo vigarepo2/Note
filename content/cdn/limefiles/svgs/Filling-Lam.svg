@@ -1,38 +1,29 @@
-<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
   <defs>
-    <filter id="shadowDeep" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="16" stdDeviation="20" flood-color="#020617" flood-opacity="0.15"/>
-    </filter>
-    <filter id="shadowMedium" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#020617" flood-opacity="0.10"/>
-    </filter>
-    <filter id="glowLime" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="0" stdDeviation="20" flood-color="#84CC16" flood-opacity="0.4"/>
-    </filter>
-    <filter id="glowLightning" x="-30%" y="-30%" width="160%" height="160%">
-      <feDropShadow dx="0" dy="0" stdDeviation="25" flood-color="#BAE6FD" flood-opacity="0.6"/>
-    </filter>
-
-    <linearGradient id="docBackGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#334155"/>
-      <stop offset="100%" stop-color="#0F172A"/>
-    </linearGradient>
-    <linearGradient id="docMidGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#E2E8F0"/>
-      <stop offset="100%" stop-color="#CBD5E1"/>
-    </linearGradient>
-    <linearGradient id="limeWedgeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#BEF264"/>
-      <stop offset="100%" stop-color="#65A30D"/>
-    </linearGradient>
-    <linearGradient id="arrowBaseGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#38BDF8"/>
-      <stop offset="100%" stop-color="#1D4ED8"/>
-    </linearGradient>
-
-    <pattern id="cloudPattern" width="60" height="60" patternUnits="userSpaceOnUse">
-      <path d="M 60 0 L 0 0 0 60" fill="none" stroke="#64748B" stroke-width="1.5" opacity="0.4"/>
-      <circle cx="0" cy="0" r="2.5" fill="#CBD5E1" opacity="0.3"/>
-    </pattern>
+    <path id="genericWedgePath" 
+          d="M 256 256 
+             L 346 204.2 
+             A 188 188 0 0 1 346 307.8 
+             Z" />
   </defs>
+
+  <g id="IconSpeed" transform="translate(128, 128)" filter="url(#shadowDeep)">
+    
+    <g filter="url(#glowLime)">
+      <circle cx="256" cy="256" r="148" fill="#F0FDF4"/> <use href="#genericWedgePath" transform="rotate(-15 256 256)" fill="url(#limeWedgeGrad)"/>
+      <use href="#genericWedgePath" transform="rotate(22.5 256 256)" fill="url(#limeWedgeGrad)"/>
+      
+      <path d="M 256 256 L 310 230 C 330 240, 330 270, 310 280 Z" fill="#F8FAFC" opacity="0.3"/>
+      <circle cx="290" cy="256" r="6" fill="#FFFFFF" opacity="0.6"/>
+    </g>
+
+    <g filter="url(#glowLightning)">
+      <path d="M 256 16 L 316 236 L 276 236 L 296 464 L 196 236 L 236 236 Z" 
+            fill="#FFFFFF" 
+            stroke="#BAE6FD" 
+            stroke-width="8" 
+            stroke-linejoin="round" 
+            transform="rotate(15 256 256) scale(0.9)"/>
+    </g>
+  </g>
 </svg>
