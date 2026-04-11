@@ -1,154 +1,38 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
   <defs>
-    <filter id="neonGlow" x="-30%" y="-30%" width="160%" height="160%">
-      <feDropShadow dx="0" dy="0" stdDeviation="16" flood-color="#84CC16" flood-opacity="0.5"/>
-      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#020617" flood-opacity="0.4"/>
-    </filter>
-
     <filter id="shadowDeep" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#020617" flood-opacity="0.5"/>
+      <feDropShadow dx="0" dy="16" stdDeviation="20" flood-color="#020617" flood-opacity="0.15"/>
+    </filter>
+    <filter id="shadowMedium" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#020617" flood-opacity="0.10"/>
+    </filter>
+    <filter id="glowLime" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="0" stdDeviation="20" flood-color="#84CC16" flood-opacity="0.4"/>
+    </filter>
+    <filter id="glowLightning" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="0" stdDeviation="25" flood-color="#BAE6FD" flood-opacity="0.6"/>
     </filter>
 
-    <linearGradient id="limeFilled" x1="0%" y1="0%" x2="100%" y2="100%">
+    <linearGradient id="docBackGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#334155"/>
+      <stop offset="100%" stop-color="#0F172A"/>
+    </linearGradient>
+    <linearGradient id="docMidGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E2E8F0"/>
+      <stop offset="100%" stop-color="#CBD5E1"/>
+    </linearGradient>
+    <linearGradient id="limeWedgeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#BEF264"/>
       <stop offset="100%" stop-color="#65A30D"/>
     </linearGradient>
-
-    <linearGradient id="limeEmpty" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#1E293B"/>
-      <stop offset="100%" stop-color="#0F172A"/>
+    <linearGradient id="arrowBaseGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38BDF8"/>
+      <stop offset="100%" stop-color="#1D4ED8"/>
     </linearGradient>
 
-    <path id="wedge" 
-          d="M 236.9 209.8 
-             L 208.6 141.5 
-             A 124 124 0 0 1 303.4 141.5 
-             L 275.1 209.8 
-             A 50 50 0 0 0 236.9 209.8 Z" 
-          stroke="#0B1120" 
-          stroke-width="6" 
-          stroke-linejoin="round"/>
+    <pattern id="cloudPattern" width="60" height="60" patternUnits="userSpaceOnUse">
+      <path d="M 60 0 L 0 0 0 60" fill="none" stroke="#64748B" stroke-width="1.5" opacity="0.4"/>
+      <circle cx="0" cy="0" r="2.5" fill="#CBD5E1" opacity="0.3"/>
+    </pattern>
   </defs>
-
-  <style>
-    /* ==========================================
-       HARDWARE-ACCELERATED CSS ANIMATIONS
-       ========================================== */
-    
-    /* 1. Outer Ring Loading Animation */
-    .track-animated {
-      stroke-dasharray: 1194; /* Circumference of r=190 */
-      stroke-dashoffset: 1194;
-      animation: drawRing 5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-    }
-    
-    @keyframes drawRing {
-      0% { stroke-dashoffset: 1194; opacity: 1; }
-      80%, 95% { stroke-dashoffset: 0; opacity: 1; }
-      96%, 100% { stroke-dashoffset: 0; opacity: 0; }
-    }
-
-    /* 2. Sequential Wedge Illuminations */
-    .wedge-anim { transform-origin: 256px 256px; opacity: 0; }
-    .w1 { animation: fillW1 5s infinite; }
-    .w2 { animation: fillW2 5s infinite; }
-    .w3 { animation: fillW3 5s infinite; }
-    .w4 { animation: fillW4 5s infinite; }
-    .w5 { animation: fillW5 5s infinite; }
-    .w6 { animation: fillW6 5s infinite; }
-    .w7 { animation: fillW7 5s infinite; }
-    .w8 { animation: fillW8 5s infinite; }
-
-    /* Timing: 0% (W1) -> 80% (W8). Held from 80%-95% to sync with ring completion and checkmark pop. Reset at 96% for looping. */
-    @keyframes fillW1 { 0%, 9.9% { opacity: 0; transform: scale(0.95); } 10%, 95% { opacity: 1; transform: scale(1); } 96%, 100% { opacity: 0; transform: scale(0.95); } }
-    @keyframes fillW2 { 0%, 19.9% { opacity: 0; transform: scale(0.95); } 20%, 95% { opacity: 1; transform: scale(1); } 96%, 100% { opacity: 0; transform: scale(0.95); } }
-    @keyframes fillW3 { 0%, 29.9% { opacity: 0; transform: scale(0.95); } 30%, 95% { opacity: 1; transform: scale(1); } 96%, 100% { opacity: 0; transform: scale(0.95); } }
-    @keyframes fillW4 { 0%, 39.9% { opacity: 0; transform: scale(0.95); } 40%, 95% { opacity: 1; transform: scale(1); } 96%, 100% { opacity: 0; transform: scale(0.95); } }
-    @keyframes fillW5 { 0%, 49.9% { opacity: 0; transform: scale(0.95); } 50%, 95% { opacity: 1; transform: scale(1); } 96%, 100% { opacity: 0; transform: scale(0.95); } }
-    @keyframes fillW6 { 0%, 59.9% { opacity: 0; transform: scale(0.95); } 60%, 95% { opacity: 1; transform: scale(1); } 96%, 100% { opacity: 0; transform: scale(0.95); } }
-    @keyframes fillW7 { 0%, 69.9% { opacity: 0; transform: scale(0.95); } 70%, 95% { opacity: 1; transform: scale(1); } 96%, 100% { opacity: 0; transform: scale(0.95); } }
-    @keyframes fillW8 { 0%, 79.9% { opacity: 0; transform: scale(0.95); } 80%, 95% { opacity: 1; transform: scale(1); } 96%, 100% { opacity: 0; transform: scale(0.95); } }
-
-    /* 3. Central HUD Animations (Icons & Status Text) */
-    .icon-upload { animation: pulseUpload 5s infinite; }
-    .icon-check { transform-origin: 256px 238px; animation: popCheck 5s infinite; }
-    .text-loading { animation: hideSuccess 5s infinite; }
-    .text-success { animation: showSuccess 5s infinite; }
-
-    /* Bouncing upload arrow: fades out at 70% as upload nears completion */
-    @keyframes pulseUpload {
-      0%, 20%, 40%, 60% { transform: translateY(0px); opacity: 1; }
-      10%, 30%, 50% { transform: translateY(-8px); opacity: 1; }
-      70%, 100% { transform: translateY(-20px); opacity: 0; }
-    }
-    
-    /* Pop Checkmark: Springs up at 82% to signal 100% completion */
-    @keyframes popCheck {
-      0%, 78% { opacity: 0; transform: scale(0.5); }
-      82%, 95% { opacity: 1; transform: scale(1); }
-      96%, 100% { opacity: 0; transform: scale(0.5); }
-    }
-
-    /* Text State Management: 'Uploading' hides at 79%, 'Complete' shows at 80% */
-    @keyframes hideSuccess {
-      0%, 78% { opacity: 1; }
-      79%, 100% { opacity: 0; }
-    }
-
-    @keyframes showSuccess {
-      0%, 78% { opacity: 0; }
-      80%, 95% { opacity: 1; }
-      96%, 100% { opacity: 0; }
-    }
-  </style>
-
-  <circle cx="256" cy="256" r="230" fill="#0B1120" filter="url(#shadowDeep)"/>
-  
-  <circle cx="256" cy="256" r="190" fill="none" stroke="#1E293B" stroke-width="16"/>
-
-  <g transform="rotate(0 256 256)">
-    <use href="#wedge" transform="rotate(0 256 256)" fill="url(#limeEmpty)"/>
-    <use href="#wedge" transform="rotate(45 256 256)" fill="url(#limeEmpty)"/>
-    <use href="#wedge" transform="rotate(90 256 256)" fill="url(#limeEmpty)"/>
-    <use href="#wedge" transform="rotate(135 256 256)" fill="url(#limeEmpty)"/>
-    <use href="#wedge" transform="rotate(180 256 256)" fill="url(#limeEmpty)"/>
-    <use href="#wedge" transform="rotate(225 256 256)" fill="url(#limeEmpty)"/>
-    <use href="#wedge" transform="rotate(270 256 256)" fill="url(#limeEmpty)"/>
-    <use href="#wedge" transform="rotate(315 256 256)" fill="url(#limeEmpty)"/>
-  </g>
-
-  <circle class="track-animated" cx="256" cy="256" r="190" 
-          fill="none" 
-          stroke="url(#limeFilled)" 
-          stroke-width="16" 
-          stroke-linecap="round" 
-          filter="url(#neonGlow)"
-          transform="rotate(-90 256 256)"/>
-
-  <g transform="rotate(0 256 256)">
-    <use href="#wedge" class="wedge-anim w1" transform="rotate(0 256 256)" fill="url(#limeFilled)" filter="url(#neonGlow)"/>
-    <use href="#wedge" class="wedge-anim w2" transform="rotate(45 256 256)" fill="url(#limeFilled)" filter="url(#neonGlow)"/>
-    <use href="#wedge" class="wedge-anim w3" transform="rotate(90 256 256)" fill="url(#limeFilled)" filter="url(#neonGlow)"/>
-    <use href="#wedge" class="wedge-anim w4" transform="rotate(135 256 256)" fill="url(#limeFilled)" filter="url(#neonGlow)"/>
-    <use href="#wedge" class="wedge-anim w5" transform="rotate(180 256 256)" fill="url(#limeFilled)" filter="url(#neonGlow)"/>
-    <use href="#wedge" class="wedge-anim w6" transform="rotate(225 256 256)" fill="url(#limeFilled)" filter="url(#neonGlow)"/>
-    <use href="#wedge" class="wedge-anim w7" transform="rotate(270 256 256)" fill="url(#limeFilled)" filter="url(#neonGlow)"/>
-    <use href="#wedge" class="wedge-anim w8" transform="rotate(315 256 256)" fill="url(#limeFilled)" filter="url(#neonGlow)"/>
-  </g>
-
-  <circle cx="256" cy="256" r="136" fill="none" stroke="#166534" stroke-width="4"/>
-
-  <circle cx="256" cy="256" r="44" fill="#020617" filter="url(#shadowDeep)"/>
-  
-  <g class="icon-upload">
-    <path d="M 256 216 L 256 266 M 236 236 L 256 216 L 276 236" fill="none" stroke="#94A3B8" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
-  </g>
-  <text class="text-loading" x="256" y="296" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="700" fill="#94A3B8" text-anchor="middle" letter-spacing="2">UPLOADING</text>
-
-  <g class="icon-check">
-    <path d="M 234 240 L 248 254 L 278 224" fill="none" stroke="#BEF264" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" filter="url(#neonGlow)"/>
-  </g>
-  <text class="text-success" x="256" y="296" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="800" fill="#BEF264" text-anchor="middle" letter-spacing="2" filter="url(#neonGlow)">COMPLETE</text>
-
-  <path d="M 256 36 L 256 48 M 256 464 L 256 476 M 36 256 L 48 256 M 464 256 L 476 256" stroke="#1E293B" stroke-width="4" stroke-linecap="round"/>
 </svg>
