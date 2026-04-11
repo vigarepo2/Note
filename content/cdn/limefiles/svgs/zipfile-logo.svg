@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <filter id="shadowDoc" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="16" stdDeviation="20" flood-color="#020617" flood-opacity="0.15"/>
+    </filter>
+    <filter id="shadowCitrus" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="-4" dy="12" stdDeviation="16" flood-color="#020617" flood-opacity="0.25"/>
+      <feDropShadow dx="0" dy="0" stdDeviation="8" flood-color="#F97316" flood-opacity="0.2"/>
+    </filter>
+    <filter id="shadowZipper" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000000" flood-opacity="0.3"/>
+    </filter>
+
+    <linearGradient id="docFront" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#334155"/>
+      <stop offset="100%" stop-color="#0F172A"/>
+    </linearGradient>
+    <linearGradient id="docFold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#475569"/>
+      <stop offset="100%" stop-color="#1E293B"/>
+    </linearGradient>
+    
+    <linearGradient id="orangeRind" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FDBA74"/>
+      <stop offset="100%" stop-color="#9A3412"/>
+    </linearGradient>
+    <linearGradient id="orangePulp" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FB923C"/>
+      <stop offset="100%" stop-color="#EA580C"/>
+    </linearGradient>
+
+    <path id="citrusSegment" d="M 380 380 L 478 350 A 104 104 0 0 1 478 410 Z" fill="url(#orangePulp)"/>
+  </defs>
+
+  <g filter="url(#shadowDoc)">
+    <path d="M 112 64 H 304 L 416 176 V 432 C 416 440.8 408.8 448 400 448 H 128 C 119.2 448 112 440.8 112 432 V 64 Z" fill="url(#docFront)"/>
+    <path d="M 304 64 V 160 C 304 168.8 311.2 176 320 176 H 416 Z" fill="url(#docFold)"/>
+  </g>
+
+  <rect x="152" y="112" width="76" height="32" rx="6" fill="#1E293B"/>
+  <text x="190" y="135" font-family="system-ui, sans-serif" font-size="20" font-weight="800" fill="#94A3B8" text-anchor="middle" letter-spacing="1">ZIP</text>
+  
+  <rect x="152" y="176" width="120" height="12" rx="6" fill="#475569"/>
+  <path d="M 152 232 L 232 208 L 312 232 V 328 L 232 352 L 152 328 Z" fill="#1E293B"/>
+  <path d="M 232 208 V 352" fill="none" stroke="#475569" stroke-width="4"/>
+  <path d="M 152 232 L 232 256 L 312 232" fill="none" stroke="#475569" stroke-width="4"/>
+
+  <g filter="url(#shadowCitrus)">
+    <circle cx="380" cy="380" r="120" fill="url(#orangeRind)"/>
+    <circle cx="380" cy="380" r="112" fill="#F8FAFC"/>
+    
+    <use href="#citrusSegment" transform="rotate(36 380 380)"/>
+    <use href="#citrusSegment" transform="rotate(108 380 380)"/>
+    <use href="#citrusSegment" transform="rotate(180 380 380)"/>
+    <use href="#citrusSegment" transform="rotate(252 380 380)"/>
+    <use href="#citrusSegment" transform="rotate(324 380 380)"/>
+    
+    <circle cx="380" cy="380" r="14" fill="#F8FAFC"/>
+
+    <g filter="url(#shadowZipper)" fill="#CBD5E1">
+      <rect x="290" y="376" width="24" height="8" rx="2"/>
+      <rect x="310" y="364" width="24" height="8" rx="2"/>
+      <rect x="330" y="376" width="24" height="8" rx="2"/>
+      <rect x="350" y="364" width="24" height="8" rx="2"/>
+      <rect x="370" y="376" width="24" height="8" rx="2"/>
+      <rect x="390" y="364" width="24" height="8" rx="2"/>
+      <rect x="410" y="376" width="24" height="8" rx="2"/>
+      <rect x="430" y="364" width="24" height="8" rx="2"/>
+      <rect x="450" y="376" width="24" height="8" rx="2"/>
+      
+      <path d="M 240 372 H 280 V 388 H 240 Z" fill="#94A3B8"/>
+      <circle cx="280" cy="380" r="12" fill="#64748B"/>
+      <circle cx="280" cy="380" r="4" fill="#0F172A"/>
+    </g>
+  </g>
+</svg>
