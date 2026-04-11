@@ -1,0 +1,62 @@
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
+     viewBox="0 0 100 100" width="80px" height="80px" xml:space="preserve">
+  
+  <style type="text/css">
+    .lime-outline { fill: none; stroke: #D3D3D3; stroke-width: 1.5; stroke-linecap: round; }
+    .lime-juice { fill: #7CFC00; /* LawnGreen - Bright, Fresh Green */ visibility: hidden; }
+    .completion-check { fill: none; stroke: #FFFFFF; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; visibility: hidden; }
+  </style>
+
+  <defs>
+    <path id="wedge" d="M50,50 L50,10 A40,40 0 0,1 78.28,21.72 Z" />
+  </defs>
+
+  <g id="LimeOutline">
+    <circle class="lime-outline" cx="50" cy="50" r="45" stroke-width="2"/>
+    
+    <circle class="lime-outline" cx="50" cy="50" r="40"/>
+    
+    <g class="lime-outline">
+      <line x1="50" y1="10" x2="50" y2="90"/> <line x1="10" y1="50" x2="90" y2="50"/> <line x1="21.72" y1="21.72" x2="78.28" y2="78.28"/> <line x1="78.28" y1="21.72" x2="21.72" y2="78.28"/> </g>
+  </g>
+
+  <g id="LimeProgress">
+    <use xlink:href="#wedge" class="lime-juice" transform="rotate(0, 50, 50)">
+      <animate attributeName="visibility" from="hidden" to="visible" dur="0.1s" begin="0.5s" fill="freeze" />
+    </use>
+    
+    <use xlink:href="#wedge" class="lime-juice" transform="rotate(45, 50, 50)">
+      <animate attributeName="visibility" from="hidden" to="visible" dur="0.1s" begin="1s" fill="freeze" />
+    </use>
+    
+    <use xlink:href="#wedge" class="lime-juice" transform="rotate(90, 50, 50)">
+      <animate attributeName="visibility" from="hidden" to="visible" dur="0.1s" begin="1.5s" fill="freeze" />
+    </use>
+    
+    <use xlink:href="#wedge" class="lime-juice" transform="rotate(135, 50, 50)">
+      <animate attributeName="visibility" from="hidden" to="visible" dur="0.1s" begin="2s" fill="freeze" />
+    </use>
+    
+    <use xlink:href="#wedge" class="lime-juice" transform="rotate(180, 50, 50)">
+      <animate attributeName="visibility" from="hidden" to="visible" dur="0.1s" begin="2.5s" fill="freeze" />
+    </use>
+    
+    <use xlink:href="#wedge" class="lime-juice" transform="rotate(225, 50, 50)">
+      <animate attributeName="visibility" from="hidden" to="visible" dur="0.1s" begin="3s" fill="freeze" />
+    </use>
+    
+    <use xlink:href="#wedge" class="lime-juice" transform="rotate(270, 50, 50)">
+      <animate attributeName="visibility" from="hidden" to="visible" dur="0.1s" begin="3.5s" fill="freeze" />
+    </use>
+    
+    <use xlink:href="#wedge" class="lime-juice" transform="rotate(315, 50, 50)">
+      <animate attributeName="visibility" from="hidden" to="visible" dur="0.1s" begin="4s" fill="freeze" />
+    </use>
+  </g>
+
+  <g id="LimeCompletion">
+    <path class="completion-check" d="M35,50 L45,60 L65,40">
+      <animate attributeName="visibility" from="hidden" to="visible" dur="0.1s" begin="4.5s" fill="freeze" />
+    </path>
+  </g>
+</svg>
