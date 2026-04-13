@@ -1,121 +1,159 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 100" width="100%" height="100%">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 88" width="100%" height="100%">
   <defs>
-    <linearGradient id="bg-grad" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#2a2a2d"/>
-      <stop offset="100%" stop-color="#1c1c1e"/>
-    </linearGradient>
-
-    <linearGradient id="glass-edge" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.15"/>
-      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.01"/>
-    </linearGradient>
-
-    <linearGradient id="icon-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#00E676"/>
-      <stop offset="100%" stop-color="#00B259"/>
-    </linearGradient>
-
-    <filter id="drop-shadow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="12" stdDeviation="12" flood-color="#000000" flood-opacity="0.4"/>
+    <filter id="premium-shadow" x="-10%" y="-10%" width="120%" height="140%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#000000" flood-opacity="0.12" id="shadow-color"/>
     </filter>
 
-    <filter id="icon-glow" x="-30%" y="-30%" width="160%" height="160%">
-      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#00E676" flood-opacity="0.35"/>
-    </filter>
-
-    <filter id="inner-shadow">
-      <feOffset dx="0" dy="2"/>
-      <feGaussianBlur stdDeviation="2" result="offset-blur"/>
-      <feComposite operator="out" in="SourceGraphic" in2="offset-blur" result="inverse"/>
-      <feFlood flood-color="white" flood-opacity="0.4" result="color"/>
-      <feComposite operator="in" in="color" in2="inverse" result="shadow"/>
-      <feComposite operator="over" in="shadow" in2="SourceGraphic"/>
-    </filter>
+    <clipPath id="squircle-clip">
+      <path d="M 24 0 C 4.8 0 0 4.8 0 24 C 0 43.2 4.8 48 24 48 C 43.2 48 48 43.2 48 24 C 48 4.8 43.2 0 24 0 Z" />
+    </clipPath>
   </defs>
 
   <style>
-    /* Embedded Physics and Animations */
-    .btn-group {
-      transform-origin: 170px 50px;
-      transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+    /* Native CSS Variables for Light Mode (Default) */
+    :root {
+      --bg-base: #FFFFFF;
+      --bg-hover: #F9F9FB;
+      --border-color: #E5E5EA;
+      --text-main: #1D1D1F;
+      --text-sub: #86868B;
+      --icon-bg: #F5F5F7;
+      --accent: #10D058; /* Sharp Malachite/Lime */
+      --arrow-color: #1D1D1F;
+    }
+
+    /* Native Dark Mode Detection */
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg-base: #1C1C1E;
+        --bg-hover: #2C2C2E;
+        --border-color: #38383A;
+        --text-main: #F5F5F7;
+        --text-sub: #A1A1A6;
+        --icon-bg: #2C2C2E;
+        --accent: #15E866;
+        --arrow-color: #F5F5F7;
+      }
+      #shadow-color {
+        flood-opacity: 0.5;
+        flood-color: #000000;
+      }
+    }
+
+    /* Core Physics */
+    .button-container {
+      transform-origin: 160px 44px;
+      transition: all 0.4s cubic-bezier(0.25, 1, 0.4, 1);
       cursor: pointer;
     }
-    .btn-group:hover {
-      transform: scale(1.02) translateY(-2px);
+    
+    .base-shape {
+      fill: var(--bg-base);
+      stroke: var(--border-color);
+      stroke-width: 1.5;
+      transition: fill 0.3s ease, stroke 0.3s ease;
     }
-    .btn-group:active {
-      transform: scale(0.97);
+
+    .button-container:hover {
+      transform: scale(1.015) translateY(-2px);
     }
     
-    .icon-box {
-      transform-origin: 52px 50px;
-      transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
-    .btn-group:hover .icon-box {
-      transform: scale(1.06);
+    .button-container:active {
+      transform: scale(0.97);
     }
 
-    .arrow-icon {
-      transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-    }
-    .btn-group:hover .arrow-icon {
-      transform: translateY(3px);
+    .button-container:hover .base-shape {
+      fill: var(--bg-hover);
+      stroke: var(--accent);
     }
 
-    .arrow-bg {
-      transition: fill 0.3s ease;
+    /* Icon Animations */
+    .icon-surface {
+      fill: var(--icon-bg);
+      transition: fill 0.4s ease;
     }
-    .btn-group:hover .arrow-bg {
-      fill: rgba(255, 255, 255, 0.15);
+    .button-container:hover .icon-surface {
+      fill: var(--accent);
     }
 
-    /* System Typography */
-    .text-eyebrow {
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, sans-serif;
-      font-size: 10px;
+    .android-vector {
+      fill: var(--text-main);
+      transition: fill 0.4s ease, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transform-origin: 24px 24px;
+    }
+    .button-container:hover .android-vector {
+      fill: #111111; /* Punches out the accent color */
+      transform: scale(1.08);
+    }
+
+    /* Typography */
+    .font-sub {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+      font-size: 11px;
       font-weight: 700;
-      letter-spacing: 2px;
+      letter-spacing: 0.15em;
+      fill: var(--text-sub);
       text-transform: uppercase;
-      fill: #8E8E93;
       transition: fill 0.3s ease;
     }
-    .btn-group:hover .text-eyebrow {
-      fill: #00E676;
+    .button-container:hover .font-sub {
+      fill: var(--text-main);
     }
 
-    .text-main {
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, sans-serif;
-      font-size: 18px;
+    .font-main {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+      font-size: 19px;
       font-weight: 600;
-      letter-spacing: -0.3px;
-      fill: #FFFFFF;
+      letter-spacing: -0.02em;
+      fill: var(--text-main);
+    }
+
+    /* Dynamic Arrow */
+    .arrow {
+      stroke: var(--arrow-color);
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+      transition: all 0.4s cubic-bezier(0.25, 1, 0.4, 1);
+    }
+    .arrow-line {
+      stroke: var(--arrow-color);
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      transition: all 0.4s cubic-bezier(0.25, 1, 0.4, 1);
+      opacity: 0.3;
+    }
+
+    .button-container:hover .arrow {
+      transform: translateY(4px);
+      stroke: var(--accent);
+    }
+    .button-container:hover .arrow-line {
+      stroke: var(--accent);
+      opacity: 1;
+      transform: scaleX(1.4);
+      transform-origin: center;
     }
   </style>
 
-  <g class="btn-group">
+  <g class="button-container">
     
-    <rect x="20" y="15" width="300" height="70" rx="35" fill="url(#bg-grad)" filter="url(#drop-shadow)"/>
-    
-    <rect x="20.5" y="15.5" width="299" height="69" rx="34.5" fill="none" stroke="#ffffff" stroke-opacity="0.08" stroke-width="1"/>
-    
-    <rect x="21" y="16" width="298" height="34" rx="33" fill="url(#glass-edge)"/>
+    <rect x="10" y="10" width="300" height="68" rx="34" class="base-shape" filter="url(#premium-shadow)"/>
 
-    <g class="icon-box">
-      <rect x="28" y="23" width="54" height="54" rx="20" fill="url(#icon-grad)" filter="url(#icon-glow)"/>
-      <rect x="28" y="23" width="54" height="54" rx="20" fill="url(#icon-grad)" filter="url(#inner-shadow)"/>
+    <g transform="translate(20, 20)">
+      <rect width="48" height="48" class="icon-surface" clip-path="url(#squircle-clip)"/>
       
-      <g transform="translate(43, 38)">
-        <path fill="#ffffff" d="M17.523 9.208l1.745-3.023c.155-.268.064-.613-.203-.768-.268-.155-.613-.064-.768.203L16.48 8.76C15.19 8.196 13.655 7.85 12 7.85c-1.656 0-3.19.346-4.48.91L5.703 5.62c-.155-.267-.5-.358-.768-.203-.268.155-.358.5-.203.768l1.745 3.023C3.308 10.985 1.154 13.987 1 17.65h22c-.154-3.663-2.308-6.665-5.477-8.442zM7.25 14.85c-.69 0-1.25-.56-1.25-1.25s.56-1.25 1.25-1.25 1.25.56 1.25 1.25-.56 1.25-1.25 1.25zm9.5 0c-.69 0-1.25-.56-1.25-1.25s.56-1.25 1.25-1.25 1.25.56 1.25 1.25-.56 1.25-1.25 1.25z"/>
-      </g>
+      <path class="android-vector" d="M31.2 20.3l1.8-3.1c.2-.3.1-.7-.2-.9-.3-.2-.7-.1-.9.2L30 19.7c-1.7-.8-3.6-1.2-5.7-1.2-2 0-3.9.4-5.6 1.2l-1.9-3.2c-.2-.3-.6-.4-.9-.2-.3.2-.4.6-.2.9l1.8 3.1C13.8 22.4 11 26 11 30.5h26.6c0-4.5-2.8-8.1-6.4-10.2zM17 26.5c-.7 0-1.2-.6-1.2-1.2 0-.7.6-1.2 1.2-1.2.7 0 1.2.6 1.2 1.2 0 .7-.6 1.2-1.2 1.2zm14.6 0c-.7 0-1.2-.6-1.2-1.2 0-.7.6-1.2 1.2-1.2.7 0 1.2.6 1.2 1.2 0 .7-.6 1.2-1.2 1.2z"/>
     </g>
 
-    <text x="100" y="42" class="text-eyebrow">Get for Android</text>
-    <text x="100" y="65" class="text-main">Download APK</text>
+    <text x="86" y="38" class="font-sub">Official Package</text>
+    <text x="85" y="60" class="font-main">Download APK</text>
 
-    <circle cx="282" cy="50" r="18" fill="rgba(255, 255, 255, 0.05)" class="arrow-bg"/>
-    <g transform="translate(270, 38)" class="arrow-icon">
-      <path fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+    <g transform="translate(270, 44)">
+      <line x1="-8" y1="12" x2="8" y2="12" class="arrow-line"/>
+      <path d="M0 -12 L0 6 M-6 0 L0 6 L6 0" class="arrow"/>
     </g>
-    
+
   </g>
 </svg>
