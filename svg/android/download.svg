@@ -1,161 +1,221 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 140" width="100%" height="100%">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 160" width="100%" height="100%">
   <defs>
-    <filter id="chassis-shadow" x="-20%" y="-20%" width="140%" height="160%">
-      <feDropShadow dx="0" dy="18" stdDeviation="24" flood-color="#000000" flood-opacity="0.6"/>
-      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#CCFF00" flood-opacity="0.05" id="lime-ambient"/>
+    <filter id="shadow-idle" x="-20%" y="-20%" width="140%" height="160%">
+      <feDropShadow dx="0" dy="20" stdDeviation="25" flood-color="#000000" flood-opacity="0.4"/>
+      <feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#000000" flood-opacity="0.5"/>
     </filter>
 
-    <filter id="neon-glow" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur stdDeviation="8" result="blur1"/>
-      <feGaussianBlur stdDeviation="16" result="blur2"/>
+    <filter id="shadow-pressed" x="-10%" y="-10%" width="120%" height="120%">
+      <feOffset dx="0" dy="8"/>
+      <feGaussianBlur stdDeviation="8" result="offset-blur"/>
+      <feComposite operator="out" in="SourceGraphic" in2="offset-blur" result="inverse"/>
+      <feFlood flood-color="#000000" flood-opacity="0.8" result="color"/>
+      <feComposite operator="in" in="color" in2="inverse" result="shadow"/>
+      <feComposite operator="over" in="shadow" in2="SourceGraphic"/>
+    </filter>
+
+    <filter id="orb-glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="12" result="blur"/>
+      <feComponentTransfer in="blur" result="glow">
+        <feFuncA type="linear" slope="0.6"/>
+      </feComponentTransfer>
       <feMerge>
-        <feMergeNode in="blur2"/>
-        <feMergeNode in="blur1"/>
+        <feMergeNode in="glow"/>
         <feMergeNode in="SourceGraphic"/>
       </feMerge>
     </filter>
 
-    <pattern id="tech-grid" width="12" height="12" patternUnits="userSpaceOnUse">
-      <path d="M 12 0 L 0 0 0 12" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
-    </pattern>
-
-    <linearGradient id="metal-base" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#23252A"/>
-      <stop offset="100%" stop-color="#141518"/>
+    <linearGradient id="chassis-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#2A2C32"/>
+      <stop offset="100%" stop-color="#18191D"/>
     </linearGradient>
 
-    <linearGradient id="metal-inset" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#141518"/>
-      <stop offset="100%" stop-color="#23252A"/>
+    <linearGradient id="lime-accent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E1FF00"/>
+      <stop offset="50%" stop-color="#B2FF00"/>
+      <stop offset="100%" stop-color="#7AFF00"/>
     </linearGradient>
-    
+
+    <linearGradient id="glass-edge" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.0"/>
+    </linearGradient>
+
+    <linearGradient id="beam" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="rgba(255,255,255,0)"/>
+      <stop offset="50%" stop-color="rgba(255,255,255,0.06)"/>
+      <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+    </linearGradient>
+
     <clipPath id="chassis-clip">
-      <rect x="30" y="30" width="400" height="80" rx="24"/>
+      <rect x="30" y="30" width="440" height="100" rx="30"/>
     </clipPath>
   </defs>
 
   <style>
-    /* Global Hardware Physics */
-    .mech-btn {
+    /* Continuous Time-Based Animations */
+    @keyframes sweep {
+      0% { transform: translateX(-150%) skewX(-25deg); }
+      100% { transform: translateX(250%) skewX(-25deg); }
+    }
+    
+    @keyframes pulse-ring {
+      0% { r: 36; stroke-opacity: 0.8; stroke-width: 2; }
+      100% { r: 55; stroke-opacity: 0; stroke-width: 0.5; }
+    }
+
+    /* Master Physics Controller */
+    .master-btn {
       cursor: pointer;
-      transform-origin: 230px 70px;
-      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      transform-origin: 250px 80px;
+      transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
       -webkit-tap-highlight-color: transparent;
     }
-    .mech-btn:hover { transform: scale(1.02); }
-    .mech-btn:active { transform: scale(0.97); transition: transform 0.1s ease-out; }
-
-    /* Surface Reactions */
-    .chassis-stroke {
-      stroke: rgba(255,255,255,0.08);
-      transition: stroke 0.4s ease, stroke-width 0.4s ease;
-    }
-    .mech-btn:hover .chassis-stroke {
-      stroke: #CCFF00;
-      stroke-width: 2px;
-      stroke-opacity: 0.8;
-    }
-
-    /* The "Hold to Download" Progress Bar Logic */
-    .progress-fill {
-      width: 0;
-      opacity: 0;
-      transition: width 0.2s ease, opacity 0.2s ease;
-    }
-    /* When user taps and holds, the bar shoots across */
-    .mech-btn:active .progress-fill {
-      width: 400px;
-      opacity: 1;
-      transition: width 1.2s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.1s ease;
-    }
-
-    /* Dynamic Text Swapping */
-    .text-idle { transition: opacity 0.2s ease, transform 0.2s ease; }
-    .text-action { opacity: 0; transform: translateY(10px); transition: opacity 0.2s ease, transform 0.2s ease; }
     
-    .mech-btn:active .text-idle { opacity: 0; transform: translateY(-10px); }
-    .mech-btn:active .text-action { opacity: 1; transform: translateY(0); fill: #141518; }
-    .mech-btn:active .text-micro { fill: rgba(20, 21, 24, 0.6); }
+    .master-btn:hover {
+      transform: scale(1.025) translateY(-4px);
+    }
+    
+    /* The Mechanical Click */
+    .master-btn:active {
+      transform: scale(0.96) translateY(4px);
+      transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+    }
 
-    /* Holographic Icon Glitch Effect */
-    .icon-base { transition: all 0.3s ease; }
-    .icon-glitch-1 { opacity: 0; fill: #00F0FF; transition: all 0.3s ease; }
-    .icon-glitch-2 { opacity: 0; fill: #CCFF00; transition: all 0.3s ease; }
+    /* Dynamic Shadow Swapping */
+    .idle-shadow { opacity: 1; transition: opacity 0.3s ease; }
+    .pressed-shadow { opacity: 0; transition: opacity 0.1s ease; }
+    
+    .master-btn:active .idle-shadow { opacity: 0; }
+    .master-btn:active .pressed-shadow { opacity: 1; }
 
-    .mech-btn:hover .icon-glitch-1 { opacity: 0.6; transform: translate(-3px, -2px); }
-    .mech-btn:hover .icon-glitch-2 { opacity: 0.6; transform: translate(3px, 2px); }
-    .mech-btn:active .icon-base { fill: #141518; }
-    .mech-btn:active .icon-glitch-1 { opacity: 0; }
-    .mech-btn:active .icon-glitch-2 { opacity: 0; }
+    /* Surface Animations */
+    .light-beam {
+      animation: sweep 4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+      animation-delay: 1s;
+    }
 
-    /* Action Arrow Sequence */
-    .chevron {
+    .chassis-border {
+      stroke: rgba(255,255,255,0.05);
+      transition: stroke 0.4s ease;
+    }
+    .master-btn:hover .chassis-border {
+      stroke: #B2FF00;
+    }
+
+    /* Icon Orb Physics */
+    .orb {
+      transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transform-origin: 80px 80px;
+    }
+    .master-btn:hover .orb {
+      transform: scale(1.08) rotate(4deg);
+    }
+    .master-btn:active .orb {
+      transform: scale(0.92) rotate(-4deg);
+    }
+
+    /* Ambient Radar Pulse (Runs on Hover) */
+    .radar-ring {
       fill: none;
-      stroke: #868C98;
-      stroke-width: 3;
-      stroke-linecap: square;
-      transition: all 0.3s ease;
+      stroke: #B2FF00;
+      opacity: 0;
     }
-    .mech-btn:hover .c1 { stroke: #CCFF00; transform: translateX(4px); opacity: 1; }
-    .mech-btn:hover .c2 { stroke: #CCFF00; transform: translateX(8px); opacity: 0.5; }
-    .mech-btn:hover .c3 { stroke: #CCFF00; transform: translateX(12px); opacity: 0.2; }
-    
-    /* Active State Arrow Override */
-    .mech-btn:active .chevron { stroke: #141518; }
+    .master-btn:hover .radar-ring {
+      animation: pulse-ring 2s cubic-bezier(0.2, 0.8, 0.2, 1) infinite;
+      opacity: 1;
+    }
 
-    /* Typography Defaults */
-    .font-micro {
-      font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", monospace;
-      font-size: 10px;
+    /* Typography Engine */
+    .typo-micro {
+      font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 11px;
       font-weight: 600;
-      letter-spacing: 0.3em;
+      letter-spacing: 0.2em;
       fill: #868C98;
-      transition: fill 0.2s;
+      transition: fill 0.3s ease;
     }
-    .font-main {
-      font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
-      font-size: 22px;
+    .typo-main {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", sans-serif;
+      font-size: 26px;
       font-weight: 800;
-      letter-spacing: -0.03em;
+      letter-spacing: -0.04em;
       fill: #FFFFFF;
-      text-transform: uppercase;
     }
+    .typo-specs {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      fill: #616672;
+      transition: fill 0.3s ease;
+    }
+    
+    .master-btn:hover .typo-micro { fill: #B2FF00; }
+    .master-btn:hover .typo-specs { fill: #A1A6B4; }
+    
+    .master-btn:active .typo-main { fill: #E1E4EC; transform: translateY(1px); }
+
+    /* Interactive Download Arrow */
+    .dl-arrow-path {
+      stroke: #616672;
+      stroke-width: 3.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .dl-arrow-line {
+      stroke: #616672;
+      stroke-width: 3.5;
+      stroke-linecap: round;
+      transition: all 0.4s ease;
+    }
+    
+    .master-btn:hover .dl-arrow-path { stroke: #B2FF00; transform: translateY(6px); }
+    .master-btn:hover .dl-arrow-line { stroke: #B2FF00; transform: translateY(-4px) scaleY(1.2); }
+    .master-btn:active .dl-arrow-path { transform: translateY(12px) scale(0.8); }
+    .master-btn:active .dl-arrow-line { transform: translateY(8px) scaleY(0.5); opacity: 0; }
   </style>
 
-  <g class="mech-btn">
+  <g class="master-btn">
     
-    <rect x="30" y="30" width="400" height="80" rx="24" fill="url(#metal-base)" filter="url(#chassis-shadow)"/>
+    <rect x="30" y="30" width="440" height="100" rx="30" fill="#000000" filter="url(#shadow-idle)" class="idle-shadow"/>
+    <rect x="30" y="30" width="440" height="100" rx="30" fill="url(#chassis-grad)" filter="url(#shadow-pressed)" class="pressed-shadow"/>
+
+    <rect x="30" y="30" width="440" height="100" rx="30" fill="url(#chassis-grad)" class="idle-shadow"/>
     
-    <rect x="30" y="30" width="400" height="80" rx="24" fill="url(#tech-grid)" clip-path="url(#chassis-clip)"/>
+    <rect x="0" y="0" width="200" height="200" fill="url(#beam)" class="light-beam" clip-path="url(#chassis-clip)"/>
 
-    <rect x="30" y="30" width="0" height="80" rx="24" fill="#CCFF00" class="progress-fill"/>
+    <rect x="31" y="31" width="438" height="40" rx="29" fill="url(#glass-edge)"/>
+    
+    <rect x="31" y="31" width="438" height="98" rx="29" fill="none" stroke-width="2" class="chassis-border"/>
 
-    <rect x="31" y="31" width="398" height="78" rx="23" fill="none" class="chassis-stroke"/>
-
-    <g transform="translate(42, 42)">
-      <rect x="0" y="0" width="56" height="56" rx="16" fill="url(#metal-inset)" stroke="rgba(0,0,0,0.5)" stroke-width="2"/>
+    <g class="orb">
+      <circle cx="90" cy="80" r="36" class="radar-ring"/>
       
-      <path class="icon-glitch-1" d="M36.4 20.8l1.9-3.3c.2-.3.1-.7-.2-.9-.3-.2-.7-.1-.9.2L35.2 20c-1.9-.9-4-1.3-6.2-1.3-2.3 0-4.3.5-6.2 1.3l-2-3.4c-.2-.3-.6-.4-.9-.2-.3.2-.4.6-.2.9l1.9 3.3C17.3 23.2 14.2 27.2 14 32h30c-.2-4.8-3.3-8.8-7.6-11.2zM21 26c-.8 0-1.5-.7-1.5-1.5S20.2 23 21 23s1.5.7 1.5 1.5S21.8 26 21 26zm16 0c-.8 0-1.5-.7-1.5-1.5s.7-1.5 1.5-1.5 1.5.7 1.5 1.5-.7 1.5-1.5 1.5z"/>
+      <circle cx="90" cy="80" r="36" fill="url(#lime-accent)" filter="url(#orb-glow)"/>
       
-      <path class="icon-glitch-2" d="M36.4 20.8l1.9-3.3c.2-.3.1-.7-.2-.9-.3-.2-.7-.1-.9.2L35.2 20c-1.9-.9-4-1.3-6.2-1.3-2.3 0-4.3.5-6.2 1.3l-2-3.4c-.2-.3-.6-.4-.9-.2-.3.2-.4.6-.2.9l1.9 3.3C17.3 23.2 14.2 27.2 14 32h30c-.2-4.8-3.3-8.8-7.6-11.2zM21 26c-.8 0-1.5-.7-1.5-1.5S20.2 23 21 23s1.5.7 1.5 1.5S21.8 26 21 26zm16 0c-.8 0-1.5-.7-1.5-1.5s.7-1.5 1.5-1.5 1.5.7 1.5 1.5-.7 1.5-1.5 1.5z"/>
+      <circle cx="90" cy="80" r="36" fill="url(#lime-accent)"/>
+      <path d="M 54 80 A 36 36 0 0 1 126 80 A 36 20 0 0 0 54 80 Z" fill="rgba(255,255,255,0.4)"/>
       
-      <path class="icon-base" fill="#FFFFFF" d="M36.4 20.8l1.9-3.3c.2-.3.1-.7-.2-.9-.3-.2-.7-.1-.9.2L35.2 20c-1.9-.9-4-1.3-6.2-1.3-2.3 0-4.3.5-6.2 1.3l-2-3.4c-.2-.3-.6-.4-.9-.2-.3.2-.4.6-.2.9l1.9 3.3C17.3 23.2 14.2 27.2 14 32h30c-.2-4.8-3.3-8.8-7.6-11.2zM21 26c-.8 0-1.5-.7-1.5-1.5S20.2 23 21 23s1.5.7 1.5 1.5S21.8 26 21 26zm16 0c-.8 0-1.5-.7-1.5-1.5s.7-1.5 1.5-1.5 1.5.7 1.5 1.5-.7 1.5-1.5 1.5z"/>
-      
-      <rect x="2" y="2" width="52" height="26" rx="14" fill="rgba(255,255,255,0.03)"/>
+      <g transform="translate(71, 62)">
+        <path fill="#18191D" d="M28.4 14.5l1.8-3.1c.2-.3.1-.7-.2-.9-.3-.2-.7-.1-.9.2L27.2 13.7c-1.8-.8-3.8-1.3-6-1.3-2.1 0-4.1.5-6 1.3l-1.9-3.1c-.2-.3-.6-.4-.9-.2-.3.2-.4.6-.2.9l1.8 3.1C10.5 16.3 7.8 19.9 7.5 24.5h27c-.3-4.6-3-8.2-6.1-10zM13.8 19.2c-.7 0-1.2-.6-1.2-1.2 0-.7.6-1.2 1.2-1.2.7 0 1.2.6 1.2 1.2 0 .7-.6 1.2-1.2 1.2zm14.4 0c-.7 0-1.2-.6-1.2-1.2 0-.7.6-1.2 1.2-1.2.7 0 1.2.6 1.2 1.2 0 .7-.6 1.2-1.2 1.2z"/>
+      </g>
     </g>
 
-    <text x="120" y="56" class="font-micro text-micro">SECURE PROTOCOL / ANDROID</text>
-
-    <text x="118" y="85" class="font-main text-idle">Download APK</text>
-    
-    <text x="118" y="85" class="font-main text-action">Initializing...</text>
-
-    <g transform="translate(360, 70)">
-      <path class="chevron c3" d="M -12 -10 L -2 0 L -12 10" opacity="0"/>
-      <path class="chevron c2" d="M -4 -10 L 6 0 L -4 10" opacity="0"/>
-      <path class="chevron c1" d="M 4 -10 L 14 0 L 4 10"/>
+    <g transform="translate(148, 0)">
+      <text x="0" y="62" class="typo-micro">LIMEFILES NODE // APK_DL</text>
       
-      <path d="M 24 -14 L 30 -14 L 30 14 L 24 14" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2"/>
+      <text x="-2" y="94" class="typo-main">Download Package</text>
+      
+      <text x="0" y="116" class="typo-specs">Build v4.2.0 • 64-bit • 82.4 MB</text>
+    </g>
+
+    <g transform="translate(420, 80)">
+      <path d="M -16 -24 L -24 -24 L -24 -16 M 16 -24 L 24 -24 L 24 -16 M 16 24 L 24 24 L 24 16 M -16 24 L -24 24 L -24 16" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="2"/>
+      
+      <line x1="0" y1="-12" x2="0" y2="6" class="dl-arrow-line"/>
+      <path d="M -8 2 L 0 10 L 8 2" class="dl-arrow-path"/>
     </g>
 
   </g>
