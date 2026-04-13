@@ -1,162 +1,161 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 100" width="100%" height="100%">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 140" width="100%" height="100%">
   <defs>
-    <filter id="ambient-shadow" x="-20%" y="-20%" width="140%" height="160%">
-      <feDropShadow dx="0" dy="14" stdDeviation="18" flood-color="#000000" flood-opacity="0.15" id="shadow-base"/>
-      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000000" flood-opacity="0.08" id="shadow-core"/>
+    <filter id="chassis-shadow" x="-20%" y="-20%" width="140%" height="160%">
+      <feDropShadow dx="0" dy="18" stdDeviation="24" flood-color="#000000" flood-opacity="0.6"/>
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#CCFF00" flood-opacity="0.05" id="lime-ambient"/>
     </filter>
 
-    <filter id="icon-shadow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#00E676" flood-opacity="0.4"/>
+    <filter id="neon-glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="8" result="blur1"/>
+      <feGaussianBlur stdDeviation="16" result="blur2"/>
+      <feMerge>
+        <feMergeNode in="blur2"/>
+        <feMergeNode in="blur1"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
     </filter>
+
+    <pattern id="tech-grid" width="12" height="12" patternUnits="userSpaceOnUse">
+      <path d="M 12 0 L 0 0 0 12" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+    </pattern>
+
+    <linearGradient id="metal-base" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#23252A"/>
+      <stop offset="100%" stop-color="#141518"/>
+    </linearGradient>
+
+    <linearGradient id="metal-inset" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#141518"/>
+      <stop offset="100%" stop-color="#23252A"/>
+    </linearGradient>
+    
+    <clipPath id="chassis-clip">
+      <rect x="30" y="30" width="400" height="80" rx="24"/>
+    </clipPath>
   </defs>
 
   <style>
-    /* Theme Variables */
-    :root {
-      --bg-base: #FFFFFF;
-      --bg-glow: rgba(0, 230, 118, 0.03);
-      --border: rgba(0, 0, 0, 0.06);
-      --text-main: #1D1D1F;
-      --text-sub: #86868B;
-      --icon-grad-1: #00E676;
-      --icon-grad-2: #00B259;
-      --arrow: #1D1D1F;
-      --arrow-bg: #F5F5F7;
-    }
-
-    /* Auto Dark Mode Integration */
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg-base: #1C1C1E;
-        --bg-glow: rgba(0, 230, 118, 0.08);
-        --border: rgba(255, 255, 255, 0.1);
-        --text-main: #F5F5F7;
-        --text-sub: #A1A1A6;
-        --arrow: #F5F5F7;
-        --arrow-bg: rgba(255, 255, 255, 0.08);
-      }
-      #shadow-base { flood-opacity: 0.5; }
-      #shadow-core { flood-opacity: 0.4; }
-    }
-
-    /* 1. Global Tap Physics */
-    .btn-chassis {
-      transform-origin: 170px 50px;
-      transition: transform 0.4s cubic-bezier(0.25, 1, 0.4, 1), fill 0.4s ease;
+    /* Global Hardware Physics */
+    .mech-btn {
       cursor: pointer;
-      -webkit-tap-highlight-color: transparent; /* Removes default Android blue flash */
+      transform-origin: 230px 70px;
+      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      -webkit-tap-highlight-color: transparent;
     }
+    .mech-btn:hover { transform: scale(1.02); }
+    .mech-btn:active { transform: scale(0.97); transition: transform 0.1s ease-out; }
+
+    /* Surface Reactions */
+    .chassis-stroke {
+      stroke: rgba(255,255,255,0.08);
+      transition: stroke 0.4s ease, stroke-width 0.4s ease;
+    }
+    .mech-btn:hover .chassis-stroke {
+      stroke: #CCFF00;
+      stroke-width: 2px;
+      stroke-opacity: 0.8;
+    }
+
+    /* The "Hold to Download" Progress Bar Logic */
+    .progress-fill {
+      width: 0;
+      opacity: 0;
+      transition: width 0.2s ease, opacity 0.2s ease;
+    }
+    /* When user taps and holds, the bar shoots across */
+    .mech-btn:active .progress-fill {
+      width: 400px;
+      opacity: 1;
+      transition: width 1.2s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.1s ease;
+    }
+
+    /* Dynamic Text Swapping */
+    .text-idle { transition: opacity 0.2s ease, transform 0.2s ease; }
+    .text-action { opacity: 0; transform: translateY(10px); transition: opacity 0.2s ease, transform 0.2s ease; }
     
-    /* The Hover Lift */
-    .btn-chassis:hover {
-      transform: scale(1.02) translateY(-2px);
-    }
-    
-    /* The Tap/Squish (Active State) */
-    .btn-chassis:active {
-      transform: scale(0.96) translateY(2px);
-      transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1); /* Instant snap on tap */
-    }
+    .mech-btn:active .text-idle { opacity: 0; transform: translateY(-10px); }
+    .mech-btn:active .text-action { opacity: 1; transform: translateY(0); fill: #141518; }
+    .mech-btn:active .text-micro { fill: rgba(20, 21, 24, 0.6); }
 
-    /* 2. Background Reactions */
-    .base-plate {
-      fill: var(--bg-base);
-      stroke: var(--border);
-      stroke-width: 1;
-      transition: all 0.4s ease;
-    }
-    .btn-chassis:hover .base-plate {
-      fill: var(--bg-glow);
-      stroke: var(--icon-grad-1);
-    }
+    /* Holographic Icon Glitch Effect */
+    .icon-base { transition: all 0.3s ease; }
+    .icon-glitch-1 { opacity: 0; fill: #00F0FF; transition: all 0.3s ease; }
+    .icon-glitch-2 { opacity: 0; fill: #CCFF00; transition: all 0.3s ease; }
 
-    /* 3. Icon Block Interactions */
-    .icon-block {
-      transform-origin: 52px 50px;
-      transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
-    /* Icon scales up on hover */
-    .btn-chassis:hover .icon-block {
-      transform: scale(1.08);
-    }
-    /* Icon physically tilts backward on tap */
-    .btn-chassis:active .icon-block {
-      transform: scale(0.95) rotate(-6deg);
-      transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1);
-    }
+    .mech-btn:hover .icon-glitch-1 { opacity: 0.6; transform: translate(-3px, -2px); }
+    .mech-btn:hover .icon-glitch-2 { opacity: 0.6; transform: translate(3px, 2px); }
+    .mech-btn:active .icon-base { fill: #141518; }
+    .mech-btn:active .icon-glitch-1 { opacity: 0; }
+    .mech-btn:active .icon-glitch-2 { opacity: 0; }
 
-    /* 4. Typography Fluidity */
-    .text-top {
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      fill: var(--text-sub);
-      transition: fill 0.3s ease;
-    }
-    .btn-chassis:hover .text-top {
-      fill: var(--icon-grad-1);
-    }
-
-    .text-bottom {
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
-      font-size: 19px;
-      font-weight: 600;
-      letter-spacing: -0.02em;
-      fill: var(--text-main);
-    }
-
-    /* 5. Download Arrow Physics */
-    .arrow-container {
-      fill: var(--arrow-bg);
-      transition: all 0.4s ease;
-    }
-    .arrow-icon {
-      stroke: var(--arrow);
-      stroke-width: 2.5;
-      stroke-linecap: round;
-      stroke-linejoin: round;
+    /* Action Arrow Sequence */
+    .chevron {
       fill: none;
-      transform-origin: 280px 50px;
-      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      stroke: #868C98;
+      stroke-width: 3;
+      stroke-linecap: square;
+      transition: all 0.3s ease;
     }
+    .mech-btn:hover .c1 { stroke: #CCFF00; transform: translateX(4px); opacity: 1; }
+    .mech-btn:hover .c2 { stroke: #CCFF00; transform: translateX(8px); opacity: 0.5; }
+    .mech-btn:hover .c3 { stroke: #CCFF00; transform: translateX(12px); opacity: 0.2; }
     
-    /* Arrow drops down and turns green on hover */
-    .btn-chassis:hover .arrow-container {
-      fill: rgba(0, 230, 118, 0.15);
+    /* Active State Arrow Override */
+    .mech-btn:active .chevron { stroke: #141518; }
+
+    /* Typography Defaults */
+    .font-micro {
+      font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", monospace;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      fill: #868C98;
+      transition: fill 0.2s;
     }
-    .btn-chassis:hover .arrow-icon {
-      transform: translateY(4px);
-      stroke: var(--icon-grad-1);
-    }
-    /* Arrow sharply shoots down on tap */
-    .btn-chassis:active .arrow-icon {
-      transform: translateY(8px) scale(0.9);
-      transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+    .font-main {
+      font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      fill: #FFFFFF;
+      text-transform: uppercase;
     }
   </style>
 
-  <g class="btn-chassis">
+  <g class="mech-btn">
     
-    <rect x="20" y="14" width="300" height="72" rx="36" class="base-plate" filter="url(#ambient-shadow)"/>
+    <rect x="30" y="30" width="400" height="80" rx="24" fill="url(#metal-base)" filter="url(#chassis-shadow)"/>
+    
+    <rect x="30" y="30" width="400" height="80" rx="24" fill="url(#tech-grid)" clip-path="url(#chassis-clip)"/>
 
-    <g class="icon-block">
-      <rect x="30" y="24" width="52" height="52" rx="20" fill="var(--icon-grad-2)" filter="url(#icon-shadow)"/>
-      <rect x="30" y="24" width="52" height="52" rx="20" fill="var(--icon-grad-1)"/>
+    <rect x="30" y="30" width="0" height="80" rx="24" fill="#CCFF00" class="progress-fill"/>
+
+    <rect x="31" y="31" width="398" height="78" rx="23" fill="none" class="chassis-stroke"/>
+
+    <g transform="translate(42, 42)">
+      <rect x="0" y="0" width="56" height="56" rx="16" fill="url(#metal-inset)" stroke="rgba(0,0,0,0.5)" stroke-width="2"/>
       
-      <path d="M 30 44 L 30 38 C 30 28 38 24 48 24 L 64 24 C 74 24 82 28 82 38 L 82 44 Z" fill="rgba(255,255,255,0.2)"/>
-
-      <path fill="#ffffff" d="M63.5 39.2l1.7-3c.2-.3.1-.6-.2-.8-.3-.2-.6-.1-.8.2l-1.8 3.1c-1.3-.6-2.8-.9-4.5-.9s-3.2.3-4.5.9l-1.8-3.1c-.2-.3-.5-.4-.8-.2-.3.2-.4.5-.2.8l1.7 3C49.3 41 47.2 44 47 47.7h22c-.2-3.7-2.3-6.7-5.5-8.5zM53.2 44.8c-.6 0-1.1-.5-1.1-1.1s.5-1.1 1.1-1.1 1.1.5 1.1 1.1-.5 1.1-1.1 1.1zm9.5 0c-.6 0-1.1-.5-1.1-1.1s.5-1.1 1.1-1.1 1.1.5 1.1 1.1-.5 1.1-1.1 1.1z"/>
+      <path class="icon-glitch-1" d="M36.4 20.8l1.9-3.3c.2-.3.1-.7-.2-.9-.3-.2-.7-.1-.9.2L35.2 20c-1.9-.9-4-1.3-6.2-1.3-2.3 0-4.3.5-6.2 1.3l-2-3.4c-.2-.3-.6-.4-.9-.2-.3.2-.4.6-.2.9l1.9 3.3C17.3 23.2 14.2 27.2 14 32h30c-.2-4.8-3.3-8.8-7.6-11.2zM21 26c-.8 0-1.5-.7-1.5-1.5S20.2 23 21 23s1.5.7 1.5 1.5S21.8 26 21 26zm16 0c-.8 0-1.5-.7-1.5-1.5s.7-1.5 1.5-1.5 1.5.7 1.5 1.5-.7 1.5-1.5 1.5z"/>
+      
+      <path class="icon-glitch-2" d="M36.4 20.8l1.9-3.3c.2-.3.1-.7-.2-.9-.3-.2-.7-.1-.9.2L35.2 20c-1.9-.9-4-1.3-6.2-1.3-2.3 0-4.3.5-6.2 1.3l-2-3.4c-.2-.3-.6-.4-.9-.2-.3.2-.4.6-.2.9l1.9 3.3C17.3 23.2 14.2 27.2 14 32h30c-.2-4.8-3.3-8.8-7.6-11.2zM21 26c-.8 0-1.5-.7-1.5-1.5S20.2 23 21 23s1.5.7 1.5 1.5S21.8 26 21 26zm16 0c-.8 0-1.5-.7-1.5-1.5s.7-1.5 1.5-1.5 1.5.7 1.5 1.5-.7 1.5-1.5 1.5z"/>
+      
+      <path class="icon-base" fill="#FFFFFF" d="M36.4 20.8l1.9-3.3c.2-.3.1-.7-.2-.9-.3-.2-.7-.1-.9.2L35.2 20c-1.9-.9-4-1.3-6.2-1.3-2.3 0-4.3.5-6.2 1.3l-2-3.4c-.2-.3-.6-.4-.9-.2-.3.2-.4.6-.2.9l1.9 3.3C17.3 23.2 14.2 27.2 14 32h30c-.2-4.8-3.3-8.8-7.6-11.2zM21 26c-.8 0-1.5-.7-1.5-1.5S20.2 23 21 23s1.5.7 1.5 1.5S21.8 26 21 26zm16 0c-.8 0-1.5-.7-1.5-1.5s.7-1.5 1.5-1.5 1.5.7 1.5 1.5-.7 1.5-1.5 1.5z"/>
+      
+      <rect x="2" y="2" width="52" height="26" rx="14" fill="rgba(255,255,255,0.03)"/>
     </g>
 
-    <text x="100" y="42" class="text-top">System Package</text>
-    <text x="98" y="66" class="text-bottom">Download APK</text>
+    <text x="120" y="56" class="font-micro text-micro">SECURE PROTOCOL / ANDROID</text>
 
-    <g>
-      <circle cx="280" cy="50" r="20" class="arrow-container"/>
+    <text x="118" y="85" class="font-main text-idle">Download APK</text>
+    
+    <text x="118" y="85" class="font-main text-action">Initializing...</text>
+
+    <g transform="translate(360, 70)">
+      <path class="chevron c3" d="M -12 -10 L -2 0 L -12 10" opacity="0"/>
+      <path class="chevron c2" d="M -4 -10 L 6 0 L -4 10" opacity="0"/>
+      <path class="chevron c1" d="M 4 -10 L 14 0 L 4 10"/>
       
-      <path d="M280 43 L280 57 M274 51 L280 57 L286 51" class="arrow-icon"/>
+      <path d="M 24 -14 L 30 -14 L 30 14 L 24 14" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2"/>
     </g>
 
   </g>
