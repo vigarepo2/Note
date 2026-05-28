@@ -1,1 +1,1 @@
-https://api.kartoons.me/api/cloudstream/proxy/b55ey0uN.m3u8
+https://pub-6c3ca893fb1447bb9d9e1010f76c2839.r2.dev/adb28d379633f47279f5d0617f7010c7?token=1779940768
