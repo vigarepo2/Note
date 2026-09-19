@@ -1,71 +1,40 @@
-function TrexRunnerBot() {
-  const makeKeyArgs = (keyCode) => {
-    const preventDefault = () => void 0;
-    return {keyCode, preventDefault};
-  };
+// 1. Clear any stuck bots if you run this multiple times
+if (window.botInterval) clearInterval(window.botInterval);
 
-  const upKeyArgs = makeKeyArgs(38);
-  const downKeyArgs = makeKeyArgs(40);
-  const startArgs = makeKeyArgs(32);
-
-  if (!Runner().playing) {
-    Runner().onKeyDown(startArgs);
-    setTimeout(() => {
-      Runner().onKeyUp(startArgs);
-    }, 500);
-  }
-
-  function conquerTheGame() {
-    if (!Runner || !Runner().horizon.obstacles[0]) return;
-    const obstacle = Runner().horizon.obstacles[0];
-    if (obstacle.typeConfig && obstacle.typeConfig.type === 'SNACK') return;
-    if (needsToTackle(obstacle) && closeEnoughToTackle(obstacle)) tackle(obstacle);
-  }
-
-  function needsToTackle(obstacle) {
-    return obstacle.yPos !== 50;
-  }
-
-  function closeEnoughToTackle(obstacle) {
-    return obstacle.xPos <= Runner().currentSpeed * 18;
-  }
-
-  function tackle(obstacle) {
-    if (isDuckable(obstacle)) {
-      duck();
-    } else {
-      jumpOver(obstacle);
-    }
-  }
-
-  function isDuckable(obstacle) {
-    return obstacle.yPos === 50;
-  }
-
-  function duck() {
-    Runner().onKeyDown(downKeyArgs);
-    setTimeout(() => {
-      Runner().onKeyUp(downKeyArgs);
-    }, 500);
-  }
-
-  function jumpOver(obstacle) {
-    if (isNextObstacleCloseTo(obstacle)) jumpFast();
-    else Runner().onKeyDown(upKeyArgs);
-  }
-
-  function isNextObstacleCloseTo(currentObstacle) {
-    const nextObstacle = Runner().horizon.obstacles[1];
-    return nextObstacle && nextObstacle.xPos - currentObstacle.xPos <= Runner().currentSpeed * 42;
-  }
-
-  function jumpFast() {
-    Runner().onKeyDown(upKeyArgs);
-    Runner().onKeyUp(upKeyArgs);
-  }
-
-  return {conquerTheGame: conquerTheGame};
+// 2. Start the game if it's paused or hasn't started
+if (!window.Runner.instance_.playing) {
+    window.Runner.instance_.onKeyDown({ keyCode: 32, preventDefault: () => {} });
 }
 
-let bot = TrexRunnerBot();
-let botInterval = setInterval(bot.conquerTheGame, 2);
+// 3. The Bot Logic
+window.botInterval = setInterval(() => {
+    const runner = window.Runner.instance_;
+    
+    // Stop calculating if game is over or not playing
+    if (!runner || !runner.playing) return;
+
+    const obstacle = runner.horizon.obstacles[0];
+    if (!obstacle) return;
+
+    // Calculate when to react based on current game speed
+    const reactDistance = runner.currentSpeed * 15;
+
+    if (obstacle.xPos < reactDistance) {
+        // If the obstacle is a mid-air Pterodactyl (yPos is usually 75 or 50)
+        if (obstacle.yPos === 75 || obstacle.yPos === 50) {
+            // Duck
+            runner.onKeyDown({ keyCode: 40, preventDefault: () => {} });
+            setTimeout(() => {
+                runner.onKeyUp({ keyCode: 40, preventDefault: () => {} });
+            }, 400);
+        } else {
+            // Jump over cactuses and low birds
+            runner.onKeyDown({ keyCode: 38, preventDefault: () => {} });
+            setTimeout(() => {
+                runner.onKeyUp({ keyCode: 38, preventDefault: () => {} });
+            }, 400);
+        }
+    }
+}, 15);
+
+console.log("Bot Activated! Enjoy the run.");
